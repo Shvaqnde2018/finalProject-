@@ -1,13 +1,24 @@
+import { useState } from "react";
+import ConfirmModal from "../ui/ConfirmModal";
+
 export default function WordCard({ word, onToggleLearned, onEdit, onDelete }) {
+  const speakText = (text) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  };
+
   const playAudio = () => {
     if (word.audio) {
-      new Audio(word.audio).play();
+      const audio = new Audio(word.audio);
+      audio.play().catch(() => speakText(word.english));
     } else {
-      const utterance = new SpeechSynthesisUtterance(word.english);
-      utterance.lang = 'en-US';
-      window.speechSynthesis.speak(utterance);
+      speakText(word.english);
     }
   };
+
+  const [showConfirm, setShowConfirm] = useState(false);
 
   return (
     <div className={`word-card ${word.learned ? 'word-learned' : ''}`}>
@@ -37,10 +48,20 @@ export default function WordCard({ word, onToggleLearned, onEdit, onDelete }) {
         <button onClick={() => onEdit(word)} className="btn-secondary btn-sm">
           Редагувати
         </button>
-        <button onClick={() => onDelete(word.id)} className="btn-danger btn-sm">
+        <button onClick={() => setShowConfirm(true)} className="btn-danger btn-sm">
           Видалити
         </button>
       </div>
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Видалити слово?"
+        message={`Ви впевнені, що хочете видалити "${word.english}" зі словника?`}
+        onConfirm={() => {
+          onDelete(word.id);
+          setShowConfirm(false);
+        }}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 }

@@ -51,7 +51,7 @@ export const initialWords = [
   },
   {
     id: '6',
-    english: 'Opportunity',
+    english: 'opportunity',
     ukrainian: 'можливість, нагода',
     transcription: '/ˌɒpəˈtjuːnɪti/',
     example: 'This project is a great opportunity to learn React.',

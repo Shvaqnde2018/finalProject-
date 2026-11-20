@@ -1,8 +1,26 @@
 import { Link } from 'react-router-dom';
 import { useWords } from '../context/WordsContext';
 import StatCard from '../components/ui/StatCard';
+import { useState } from 'react';
+import ConfirmModal from '../components/ui/ConfirmModal';
 
 export default function DashboardPage() {
+  const speakText = (text) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const playAudio = () => {
+    if (word.audio) {
+      const audio = new Audio(word.audio);
+      audio.play().catch(() => speakText(word.english));
+    } else {
+      speakText(word.english);
+    }
+  };
+  
   const { words, quizHistory, resetProgress } = useWords();
 
   const totalWords = words.length;
@@ -14,6 +32,8 @@ export default function DashboardPage() {
         quizHistory.reduce((acc, q) => acc + (q.score / q.total) * 100, 0) / quizHistory.length
       )
     : 0;
+
+  const [showResetModal, setShowResetModal] = useState(false);
 
   return (
     <div className="page">
@@ -60,9 +80,20 @@ export default function DashboardPage() {
       <div className="recent-section">
         <div className="section-header">
           <h3>Історія останніх тестів</h3>
-          <button onClick={resetProgress} className="btn-danger btn-sm">
+          <button onClick={() => setShowResetModal(true)} className="btn-danger btn-sm">
             Скинути демо-дані
           </button>
+        <ConfirmModal
+          isOpen={showResetModal}
+          title="Скинути прогрес?"
+          message="Усі додані слова та історія тестів будуть видалені, а словник повернеться до демо-даних."
+          confirmText="Скинути"
+          onConfirm={() => {
+            resetProgress();
+            setShowResetModal(false);
+          }}
+          onCancel={() => setShowResetModal(false)}
+        />
         </div>
 
         {quizHistory.length === 0 ? (

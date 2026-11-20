@@ -7,18 +7,23 @@ export default function FlashcardItem({ word }) {
     setFlipped(false);
   }, [word]);
 
-  const playAudio = (e) => {
-    e.stopPropagation(); 
-
-    if (word.audio) {
-      new Audio(word.audio).play();
-    } else {
+  const speakText = (text) => {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(word.english);
-      utterance.lang = 'en-US';
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
-    }
-  };
+    };
+  
+    const playAudio = (e) => {
+      e.stopPropagation();
+
+      if (word.audio) {
+        const audio = new Audio(word.audio);
+        audio.play().catch(() => speakText(word.english));
+      } else {
+        speakText(word.english);
+      }
+    };
 
   return (
     <div className="flashcard-wrapper" onClick={() => setFlipped(!flipped)}>

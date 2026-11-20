@@ -3,16 +3,18 @@ import { initialWords } from '../data/initialWords';
 
 const WordsContext = createContext();
 
-export function WordsProvider({ children }) {
-  const [words, setWords] = useState(() => {
-    const saved = localStorage.getItem('lang_app_words');
-    return saved ? JSON.parse(saved) : initialWords;
-  });
+const loadFromStorage = (key, fallback) => {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : fallback;
+  } catch {
+    return fallback;
+  }
+};
 
-  const [quizHistory, setQuizHistory] = useState(() => {
-    const saved = localStorage.getItem('lang_app_quiz');
-    return saved ? JSON.parse(saved) : [];
-  });
+export function WordsProvider({ children }) {
+  const [words, setWords] = useState(() => loadFromStorage('lang_app_words', initialWords));
+  const [quizHistory, setQuizHistory] = useState(() => loadFromStorage('lang_app_quiz', []));
 
   useEffect(() => {
     localStorage.setItem('lang_app_words', JSON.stringify(words));
