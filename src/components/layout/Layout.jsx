@@ -9,7 +9,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
-        <p>© 2026 LinguaFlow — SPA для вивчення іноземних слів (React Course Project)</p>
+        <p>© 2026 LinguaFlow — SPA для вивчення іноземних слів</p>
       </footer>
     </div>
   );
